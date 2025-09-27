@@ -1,77 +1,108 @@
-import React, { useState } from 'react';
-import { useGlobalContext } from '../Context';
-import { FiSearch } from "react-icons/fi";
+import React, { useState } from "react";
+import { useGlobalContext } from "../Context";
 
 const SearchForm = () => {
-  const { setSearch } = useGlobalContext();
+  const { setSearch, setFilters } = useGlobalContext();
   const [value, setValue] = useState("");
+  const [orientation, setOrientation] = useState("");
+  const [color, setColor] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (value.trim() !== "") {
-      setSearch(value);
-      setValue("");
-    }
-  }
+    setSearch(value);
+    setFilters({ orientation, color });
+  };
 
   return (
-    <div
-      id='search'
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: "20px 0",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <h1 style={{ color: "#1976d2", marginBottom: "15px" }}>Search Images</h1>
-      <form 
+    <div style={{ textAlign: "center", marginTop: "40px" }}>
+      <h2 style={{ color: "#1976d2", marginBottom: "20px" }}>
+        Unsplash Image Search
+      </h2>
+
+      <form
         onSubmit={handleSubmit}
         style={{
           display: "flex",
-          width: "90%",
-          maxWidth: "500px",
-          gap: "10px",
+          justifyContent: "center",
+          gap: "15px",
+          flexWrap: "wrap",
+          marginTop: "20px",
         }}
       >
-        <input 
+        {/* Search Input */}
+        <input
           type="text"
-          name='search'
+          placeholder="Search images..."
           value={value}
-          onChange={(e)=> setValue(e.target.value)}
-          placeholder="Type to search..."
+          onChange={(e) => setValue(e.target.value)}
           style={{
-            flex: 1,
-            padding: "12px 15px",
-            borderRadius: "8px",
+            padding: "10px",
             border: "1px solid #ccc",
-            fontSize: "14px",
-            outline: "none",
-            transition: "0.3s",
+            borderRadius: "5px",
+            minWidth: "200px",
           }}
         />
-        <button 
-          type='submit'
+
+        {/* Orientation Select */}
+        <select
+          value={orientation}
+          onChange={(e) => setOrientation(e.target.value)}
           style={{
-            padding: "12px 20px",
-            border: "none",
-            borderRadius: "8px",
-            backgroundColor: "#1976d2",
-            color: "#fff",
-            fontSize: "16px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-            transition: "0.3s",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            minWidth: "140px",
           }}
         >
-          <FiSearch /> Search
+          <option value="">Any Orientation</option>
+          <option value="landscape">Landscape</option>
+          <option value="portrait">Portrait</option>
+          <option value="squarish">Square</option>
+        </select>
+
+        {/* Color Select */}
+        <select
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            minWidth: "140px",
+          }}
+        >
+          <option value="">Any Color</option>
+          <option value="black_and_white">Black & White</option>
+          <option value="black">Black</option>
+          <option value="white">White</option>
+          <option value="yellow">Yellow</option>
+          <option value="orange">Orange</option>
+          <option value="red">Red</option>
+          <option value="purple">Purple</option>
+          <option value="magenta">Magenta</option>
+          <option value="green">Green</option>
+          <option value="teal">Teal</option>
+          <option value="blue">Blue</option>
+        </select>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#1976d2",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Search
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
 export default SearchForm;

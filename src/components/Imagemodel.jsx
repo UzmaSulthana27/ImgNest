@@ -1,215 +1,127 @@
-import React, { useState } from "react";
-import { FiDownload, FiCopy } from "react-icons/fi";
+import React from "react";
 
 const ImageModel = ({ open, handleClose, image }) => {
-  const [copied, setCopied] = useState(false);
-
   if (!open || !image) return null;
 
-  // Download image in new tab (Unsplash safe)
-const handleDownload = async () => {
-  try {
-    const response = await fetch(image.urls.full, { mode: "cors" }); // fetch the image as blob
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${image.alt_description || "unsplash-image"}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    // release memory
-    window.URL.revokeObjectURL(url);
-  } catch (err) {
-    console.error("Download failed:", err);
-  }
-};
-
-
-  // Copy image URL to clipboard
-  const handleCopyURL = async () => {
+  const handleDownload = async (url, id) => {
     try {
-      await navigator.clipboard.writeText(image.links.download);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy URL", err);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `unsplash-${id}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download failed", error);
     }
   };
 
   return (
     <div
-      onClick={handleClose}
       style={{
         position: "fixed",
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
-        background: "rgba(0,0,0,0.8)",
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "rgba(0,0,0,0.7)",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
+        alignItems: "center",
         zIndex: 1000,
-        padding: "10px",
+        padding: "20px",
+        overflowY: "auto",
       }}
+      onClick={handleClose} // close when clicking outside
     >
       <div
-        onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#fff",
-          borderRadius: "10px",
-          width: "100%",
+          backgroundColor: "#fff",
           maxWidth: "900px",
+          width: "100%",
           display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          padding: "20px",
+          flexDirection: "row",
+          flexWrap: "wrap",
           position: "relative",
+          borderRadius: "8px",
+          overflow: "hidden",
         }}
+        onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
       >
-        {/* Close Button */}
+        {/* Close Button on container top-right */}
         <button
           onClick={handleClose}
           style={{
             position: "absolute",
-            top: "15px",
-            right: "20px",
-            background: "transparent",
+            top: "10px",
+            right: "10px",
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
             border: "none",
-            fontSize: "24px",
+            borderRadius: "50%",
+            width: "30px",
+            height: "30px",
             cursor: "pointer",
-            color: "#333",
+            fontSize: "16px",
+            fontWeight: "bold",
+            zIndex: 10,
           }}
         >
-          ✖
+          ✕
         </button>
 
-        {/* Image */}
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+        {/* Image side */}
+        <div style={{ flex: 2, minWidth: "300px", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px" }}>
           <img
             src={image.urls.regular}
             alt={image.alt_description || "Unsplash Image"}
             style={{
               width: "100%",
-              maxHeight: "70vh",
-              borderRadius: "8px",
+              maxHeight: "80vh",
               objectFit: "contain",
+              display: "block",
+              margin: "0 auto",
+              borderRadius: "8px",
             }}
           />
         </div>
 
-        {/* Info & Actions */}
+        {/* Info side */}
         <div
           style={{
+            flex: 1,
+            padding: "20px",
+            minWidth: "250px",
             display: "flex",
             flexDirection: "column",
-            gap: "10px",
-            fontSize: "14px",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ margin: 0 }}>Photographer: {image.user.name}</h3>
-            <div style={{ display: "flex", gap: "8px" }}>
-              {/* Download Button */}
-              <button
-                onClick={handleDownload}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  background: "#1976d2",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  transition: "0.3s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#1565c0")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#1976d2")}
-              >
-                <FiDownload /> Download
-              </button>
+          <h3 style={{ margin: "0 0 10px 0" }}>Photographer:</h3>
+          <p style={{ margin: "0 0 10px 0", fontWeight: "bold" }}>{image.user.name}</p>
 
-              {/* Copy URL Button */}
-              <button
-                onClick={handleCopyURL}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  background: "#4caf50",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  position: "relative",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#388e3c")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#4caf50")}
-              >
-                <FiCopy /> Copy URL
-                {copied && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "-25px",
-                      right: "0",
-                      background: "#333",
-                      color: "#fff",
-                      fontSize: "12px",
-                      padding: "2px 6px",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    Copied!
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
+          <p style={{ margin: "0 0 10px 0" }}>Username: {image.user.username}</p>
 
-          <p style={{ margin: 0 }}>
-            <strong>Username:</strong> {image.user.username}
-          </p>
           {image.alt_description && (
-            <p style={{ margin: 0 }}>
-              <strong>Description:</strong> {image.alt_description}
-            </p>
+            <p style={{ margin: "0 0 10px 0" }}>Description: {image.alt_description}</p>
           )}
-          <p style={{ margin: 0 }}>
-            <strong>Likes:</strong> {image.likes}
-          </p>
+
+          <p style={{ margin: "0 0 10px 0" }}>Likes: {image.likes}</p>
 
           {/* Tags */}
           {image.tags && image.tags.length > 0 ? (
             <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "6px",
-              }}
+              style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginTop: "10px" }}
             >
               {image.tags.map((tag) => (
                 <span
                   key={tag.title}
                   style={{
-                    background: "#1976d2",
-                    color: "white",
-                    padding: "4px 10px",
-                    borderRadius: "12px",
+                    backgroundColor: "#eee",
+                    padding: "5px 10px",
+                    borderRadius: "16px",
                     fontSize: "12px",
                   }}
                 >
@@ -218,8 +130,27 @@ const handleDownload = async () => {
               ))}
             </div>
           ) : (
-            <small>No tags available</small>
+            <p style={{ fontSize: "12px", color: "#666", marginTop: "10px" }}>
+              No tags available
+            </p>
           )}
+
+          {/* Download Button in Info Section */}
+          <button
+            onClick={() => handleDownload(image.urls.full, image.id)}
+            style={{
+              marginTop: "20px",
+              background: "#1e90ff",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              padding: "10px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            ⬇ Download
+          </button>
         </div>
       </div>
     </div>
