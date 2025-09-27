@@ -1,14 +1,17 @@
 import React from "react";
-import SearchForm from "./components/SearchForm";
-import Gallery from "./components/Gallery";
+import { AppProvider } from "./Context.jsx"; // make sure this file exports AppProvider
+import SearchForm from "./components/SearchForm.jsx";
+import Gallery from "./components/Gallery.jsx";
 
-const App=()=>{
-    return(
-        <div>
-            <SearchForm/>
-            <Gallery/>
-        </div>
-    )
-}
+const App = () => {
+  return (
+    <AppProvider>
+      <div style={{ fontFamily: "Arial, sans-serif" }}>
+        <SearchForm />
+        <Gallery />
+      </div>
+    </AppProvider>
+  );
+};
 
-export default App
+export default App;

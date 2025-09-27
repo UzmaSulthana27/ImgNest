@@ -1,16 +1,29 @@
-import {  createContext, useContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 
-let AppContext = createContext();
+const AppContext=createContext();
+
+export const AppProvider = ({children}) => {
+  const [search, setSearch] = useState("ocean");
+
+  const [filters, setFilters] = useState({
+    orientation: "",
+    color: "",
+  });
 
 
-export const AppProvider=({children})=>{
-    // let greeting ="yo bro"
-    let [search,setSearch]=useState('cat');
-    return <AppContext.Provider value={{search,setSearch}} >
+return(
+    <AppContext.Provider
+    value = {{
+        search,
+        setSearch,
+        filters,
+        setFilters
+    }}>
         {children}
     </AppContext.Provider>
-}
+);
+};
 
-export const useGlobalContext=()=>{
-    return useContext(AppContext);
-}
+export const useGlobalContext = () => {
+  return useContext(AppContext);
+};
